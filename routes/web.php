@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 
-Route::get('/', function () { return view('home'); })->name('home');
+Route::get('/', [PostController::class, 'index'])->name('home');
+Route::get('/post/{id}', [PostController::class, 'showPost'])->name('show.showPost');
 
 Route::middleware('guest')->controller(AuthController::class)->group(function () {
   Route::get('/login', 'showLogin')->name('show.login');

@@ -18,11 +18,10 @@ return new class extends Migration
             $table->string('meta_title');
             $table->string('meta_description');
             $table->string('keywords');
-            $table->timestamp('last_edited');
-            $table->timestamp('published_on')->nullable();
             $table->string('updated_by');
+            $table->timestamp('published_at')->nullable();
             $table->string('published_by')->nullable();
-            $table->timestamps();
+            $table->timestamps(); // creates created_at and updated_at
         });
     }
 

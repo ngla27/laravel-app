@@ -9,54 +9,54 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-  public function showCreateUser()
-  {
-      return view('auth.createUser');
-  }
+	public function showCreateUser()
+	{
+		return view('auth.createUser');
+	}
 
-  public function showLogin()
-  {
-      return view('auth.login');
-  }
+	public function showLogin()
+	{
+		return view('auth.login');
+	}
 
-  public function createUser(Request $request)
-  {
-      $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'role' => 'required|in:admin,editor,author',
-        'password' => 'required|string|min:8|confirmed',
-      ]);
-      $user = User::create($validated);
-      Auth::login($user);
+	public function createUser(Request $request)
+	{
+		$validated = $request->validate([
+			'name' => 'required|string|max:255',
+			'email' => 'required|email|unique:users',
+			'role' => 'required|in:admin,editor,author',
+			'password' => 'required|string|min:8|confirmed',
+		]);
+		$user = User::create($validated);
+		Auth::login($user);
 
-      return redirect()->route('account');
-  }
+		return redirect()->route('account');
+	}
 
-  public function login(Request $request)
-  {
-      $validated = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-      ]);
+	public function login(Request $request)
+	{
+		$validated = $request->validate([
+			'email' => 'required|email',
+			'password' => 'required|string',
+		]);
 
-      if (Auth::attempt($validated)) {
-        $request->session()->regenerate();
+		if (Auth::attempt($validated)) {
+			$request->session()->regenerate();
 
-        return redirect()->route('account');
-      }
+			return redirect()->route('account');
+		}
 
-      throw ValidationException::withMessages([
-        'credentials' => 'Email or Password is incorrect',
-      ]);
-  }
+		throw ValidationException::withMessages([
+			'credentials' => 'Email or Password is incorrect',
+		]);
+	}
 
-  public function logout(Request $request)
-  {
-      Auth::logout();
-      $request->session()->invalidate();
-      $request->session()->regenerateToken();
+	public function logout(Request $request)
+	{
+		Auth::logout();
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
 
-      return redirect()->route('show.login');
-  }
+		return redirect()->route('show.login');
+	}
 }

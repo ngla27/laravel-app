@@ -19,9 +19,10 @@ class PostFactory extends Factory
             'meta_title' => fake()->sentence(),
             'meta_description' => fake()->sentence(),
             'keywords' => fake()->word(),
-            'last_edited' => fake()->dateTimeBetween('now', '+6 months')->getTimestamp(),
+            'updated_at' => fake()->dateTimeBetween('now', '+6 months')->getTimestamp(),
             'updated_by' => fake()->email(),
-            'published_on' => fake()->dateTimeBetween('now', '+6 months')->getTimestamp()
+            'published_by' => fake()->email(),
+            'published_at' => fake()->boolean(70) ? fake()->dateTimeBetween('now', '+6 months')->getTimestamp() : null
         ];
     }
 }

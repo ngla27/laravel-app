@@ -34,6 +34,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'author'
         ]);
 
-        Post::factory(10)->create();
+        Post::factory(5)->create();
     }
 }
