@@ -15,7 +15,6 @@
 
       @guest
         <a href="{{ route('show.login') }}" class="btn">Login</a>
-        <a href="{{ route('show.createUser') }}" class="btn">Create</a>
       @endguest
 
       @auth

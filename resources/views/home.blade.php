@@ -1,3 +1,5 @@
 <x-layout>
-  Home
+  @auth
+    Role: {{ Auth::user()->role }}
+  @endauth
 </x-layout>

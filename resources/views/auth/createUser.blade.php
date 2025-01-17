@@ -3,16 +3,23 @@
     @csrf
     <h2>Create a user</h2>
     <label for="name">Name:</label>
-    <input type="text" name="name" required></input>
+    <input type="text" id="name" name="name" required></input>
 
     <label for="email">Email:</label>
-    <input type="text" name="email" required></input>
+    <input type="text" id="email" name="email" required></input>
+
+    <label for="role">Role:</label>
+    <select name="role" id="role">
+      <option value="admin">Admin</option>
+      <option value="editor">Editor</option>
+      <option value="author">Author</option>
+    </select>
 
     <label for="password">Password:</label>
-    <input type="password" name="password" required></input>
+    <input type="password" id="password" name="password" required></input>
 
     <label for="confirm_password">Confirm password:</label>
-    <input type="password" name="password_confirmation" required></input>
+    <input type="password" id="confirm_password" name="password_confirmation" required></input>
 
     <button type="submit" class="btn">Create</button>
 

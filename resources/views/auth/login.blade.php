@@ -4,10 +4,10 @@
     <h2>Login to your account</h2>
 
     <label for="email">Email:</label>
-    <input type="text" name="email" required></input>
+    <input type="text" id="email" name="email" required></input>
 
     <label for="password">Password:</label>
-    <input type="password" name="password" required></input>
+    <input type="password" id="password" name="password" required></input>
     
     <button type="submit" class="btn mt-4">Login</button>
 
