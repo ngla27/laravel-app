@@ -21,6 +21,7 @@
         <span class="border-r-2 pr-5">
           Hi there, {{ Auth::user()->name }}!
         </span>
+        <a href="{{ route('account') }}" class="btn">Account</a>
         <form action="{{ route('logout') }}" method="POST" class="m-0">
           @csrf
           <button type="submit" class="btn">Logout</button>

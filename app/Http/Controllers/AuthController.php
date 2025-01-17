@@ -30,20 +30,20 @@ class AuthController extends Controller
       $user = User::create($validated);
       Auth::login($user);
 
-      return redirect()->route('home');
+      return redirect()->route('account');
   }
 
   public function login(Request $request)
   {
       $validated = $request->validate([
         'email' => 'required|email',
-        'password' => 'required|string|min:8',
+        'password' => 'required|string',
       ]);
 
       if (Auth::attempt($validated)) {
         $request->session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()->route('account');
       }
 
       throw ValidationException::withMessages([

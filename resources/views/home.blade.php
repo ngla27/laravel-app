@@ -1,5 +1,3 @@
 <x-layout>
-  @auth
-    Role: {{ Auth::user()->role }}
-  @endauth
+  You should see posts here!
 </x-layout>
