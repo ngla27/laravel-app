@@ -11,10 +11,7 @@
 
     <label class="required" for="start_timestamp">Start Date Time</label>
     <input type="datetime-local" id="start_timestamp" name="start_timestamp" value="{{ old('start_timestamp') }}" required>
-
-    <label for="end_timestamp">End Date Time</label>
-    <input type="datetime-local" id="end_timestamp" name="end_timestamp" value="{{ old('end_timestamp') }}"> 
-
+    
     <br>
     <div class="metaContainer">
         <div class="metaHeader">

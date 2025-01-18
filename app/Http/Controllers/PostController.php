@@ -121,7 +121,6 @@ class PostController extends Controller
 			'title' => 'required|string|min:5|max:255',
 			'description' => 'required|min:5|string',
 			'start_timestamp' => 'required|date',
-            'end_timestamp' => 'required|date|after:start_timestamp,now',
             'meta_title' => 'required|string|min:5|max:255',
 			'meta_description' => 'required|min:5|string',
             'keywords' => 'required|string|min:3|max:255'
@@ -142,10 +141,7 @@ class PostController extends Controller
             'meta_description' => $validated['meta_description'],
             'keywords' => $validated['keywords'],
             'edited_by' => $user->email,
-            'start_timestamp' => Carbon::parse($validated['start_timestamp'])->timestamp * 1000,
-            'end_timestamp' => $validated['start_timestamp'] 
-                ? Carbon::parse($validated['start_timestamp'])->timestamp * 1000
-                : null,
+            'start_timestamp' => Carbon::parse($validated['start_timestamp'])->timestamp * 1000
         ]);
 
 		return redirect()->route('show.account');

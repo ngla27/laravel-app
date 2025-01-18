@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('keywords');
             $table->string('edited_by');
             $table->integer('start_timestamp');
-            $table->integer('end_timestamp')->nullable();
         });
     }
 

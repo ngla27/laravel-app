@@ -23,8 +23,7 @@ class PostVersion extends Model
         'meta_description',
         'keywords',
         'edited_by',
-        'start_timestamp',
-        'end_timestamp'
+        'start_timestamp'
     ];
 
     public function post()
