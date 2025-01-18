@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PostController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
@@ -34,5 +35,10 @@ Route::middleware('auth')
         Route::get('/showUsers', 'showUsers')->middleware('role:admin')->name('show.showUsers');
         Route::get('/createUser', 'showCreateUser')->middleware('role:admin')->name('show.createUser');
         Route::post('/createUser', 'createUser')->middleware('role:admin')->name('createUser');
+    });
+
+    Route::controller(MetaController::class)
+    ->group(function () {
+        Route::post('/generateMeta', 'generateMeta')->middleware('role:editor,author')->name('generateMeta');
     });
 });

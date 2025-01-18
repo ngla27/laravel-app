@@ -35,7 +35,10 @@
     <br>
     <div class="metaContainer">
         <div class="metaHeader">
-            <h2>Meta data</h2><a href="#" class="btn">Generate</a>
+            <h2>Meta data</h2>
+            @can('editPost', Auth::user())
+                <button type="button" class="btn" onclick="generateSuggestions()">Generate</button>
+            @endcan
         </div>
         <label class="required" for="meta_title">Meta title</label>
         <input class="bg-gray-200" type="text" id="meta_title" name="meta_title" value="{{ old('meta_title', isset($post) ? $post->meta_title : '') }}" required></input>
@@ -85,4 +88,34 @@
             @endforeach
         </ul>
     @endif
+
+    <script>
+        // Function to trigger an AJAX request to generate meta information
+        function generateSuggestions() {
+            // Get form data
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const APP_URL = "http://localhost/laravel-app/public"
+            fetch(`${APP_URL}/generateMeta`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ title: title, description: description })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Populate the form fields with the generated suggestions
+                document.getElementById('meta_title').value = data.meta_title || title;
+                document.getElementById('meta_description').value = data.meta_description || description;
+                document.getElementById('keywords').value = data.keywords || '';
+            })
+            .catch(error => {
+                console.error('Error generating suggestions:', error);
+            });
+        }
+    </script>
 </x-layout>
