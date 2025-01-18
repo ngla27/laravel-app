@@ -3,16 +3,16 @@
     <br><br>
 
     @can('createUser', Auth::user())
-        <a href="{{ route('show.createUser') }}" class="btn">Create User</a>
+        <a href="{{ route('show.showUsers') }}" class="btn">See all users</a>
+        <br><br>
     @endcan
 
-    @can('createPost', Auth::user())
-        <a href="{{ route('show.createPost') }}" class="btn">Create Post</a>
-    @endcan
-    
-    <br><br>
-
-    <h1 class="my-4 text-3xl font-bold text-center">All Posts</h1>
+    <div class="metaHeader">
+        <h1 class="my-4 text-3xl font-bold text-center">All Posts</h1>
+        @can('createPost', Auth::user())
+            <a href="{{ route('show.createPost') }}" class="btn">Create Post</a>
+        @endcan
+    </div>
 
     @if($posts->isEmpty())
         <p class="text-center">No posts available.</p>
@@ -32,13 +32,17 @@
                     <div class="postMeta">
                         <span class="font-semibold">Edited By:</span> {{ $post->edited_by }}
                         <br>
-                        <span class="font-semibold">Last Updated:</span> {{ $post->published_at }}
+                        <span class="font-semibold">Version created at:</span> {{ $post->published_at }}
                         <br>
+                        @if(\Carbon\Carbon::parse($post->start_timestamp)->isFuture())
+                            <span class="font-semibold">Scheduled date:</span> {{ $post->start_timestamp }}
+                            <br>
+                        @endif
                     </div>
                     <div class="postContent" id="content-{{ $post->id }}">{{ $post->description }}</div>
 
                     <!-- See full post -->
-                    <a href="{{ route('show.showPost', ['id' => $post->post_version_id]) }}" class="seeMoreLink">Edit Page</a>
+                    <a href="{{ route('show.editPost', ['id' => $post->post_version_id]) }}" class="seeMoreLink">Edit Page</a>
                 </div>
             @endforeach
         </div>

@@ -54,9 +54,18 @@ class AuthController extends Controller
 			'password' => 'required|string|min:8|confirmed',
 		]);
 		$user = User::create($validated);
-		Auth::login($user);
 
-		return redirect()->route('show.account');
+		return redirect()->route('show.showUsers')
+				->with('success', 'User created successfully!');
+	}
+
+	public function showUsers()
+	{
+		$authUser = Auth::user();
+		$this->authorize('createUser', $authUser);
+
+		$users = User::all();
+		return view('auth.showUser', compact('users'));		
 	}
 
 	public function logout(Request $request)

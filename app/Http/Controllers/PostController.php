@@ -15,7 +15,7 @@ class PostController extends Controller
     use AuthorizesRequests;
 
     /**
-     * HomePage: Get latest versions of posts with published status
+     * HomePage: Get latest versions of posts with published status: start_timestamp
      */
     public function index()
     {
@@ -24,18 +24,18 @@ class PostController extends Controller
             latest_versions.*, post_id as post_version_id, datetime(start_timestamp, 'unixepoch') as published_at
             FROM posts
             JOIN ( 
-                SELECT post_versions.*, MAX(start_timestamp) as start_timestamp
+                SELECT *, MAX(created_at) as created_at
                 FROM post_versions
                 WHERE start_timestamp <= :currentTimestamp
                 GROUP BY post_id 
             ) AS latest_versions
             ON posts.id = latest_versions.post_id 
             AND posts.status = :status
-            ORDER BY latest_versions.start_timestamp DESC";
+            ORDER BY latest_versions.created_at DESC";
 
-        $posts = collect(DB::select($query,[
+        $posts = collect(DB::select($query, [
             'status' => 'published',
-            'currentTimestamp' => now(),
+            'currentTimestamp' => Carbon::now()->timestamp,
         ]));
         
         // Pass the posts data to the view
@@ -43,7 +43,7 @@ class PostController extends Controller
     }
 
     /**
-     * HomePage: Get latest version of a single post
+     * HomePage: Get latest version of a single post with published status
      */
     public function showPost($postVersionId)
     {
@@ -65,7 +65,7 @@ class PostController extends Controller
 
         $post = collect(DB::select($query,[
             'status' => 'published',
-            'currentTimestamp' => now(),
+            'currentTimestamp' => Carbon::now()->timestamp,
             'postVersionId' => $postVersionId
         ]))->first();
 
@@ -73,7 +73,7 @@ class PostController extends Controller
     }
 
     /**
-     * Backoffice: Get latest versions of all posts
+     * Backoffice: Get latest versions of all posts: created_at
      */
     public function listPosts()
     {
@@ -83,20 +83,17 @@ class PostController extends Controller
 
         $query = "SELECT 
             posts.status, posts.authored_by,
-            latest_versions.*, post_id as post_version_id, datetime(start_timestamp, 'unixepoch') as published_at
+            latest_versions.*, post_id as post_version_id, latest_versions.created_at as published_at, 
+            datetime(start_timestamp, 'unixepoch') as start_timestamp
             FROM posts
             JOIN ( 
-                SELECT post_versions.*, MAX(start_timestamp) as start_timestamp
+                SELECT post_versions.*, MAX(created_at) as created_at
                 FROM post_versions
-                WHERE start_timestamp <= :currentTimestamp
-                GROUP BY post_id 
+                GROUP BY post_id
             ) AS latest_versions
             ON posts.id = latest_versions.post_id
-            ORDER BY latest_versions.start_timestamp DESC";
-
-        $posts = collect(DB::select($query,[
-            'currentTimestamp' => now(),
-        ]));
+            ORDER BY latest_versions.created_at DESC";
+        $posts = collect(DB::select($query));
         
         // Pass the posts data to the view
         return $posts;
@@ -106,6 +103,7 @@ class PostController extends Controller
 	{
         $user = Auth::user();
         $this->authorize('createPost', $user);
+        
 		return view('post.editPost');
 	}
 
@@ -113,25 +111,21 @@ class PostController extends Controller
 	{
         $user = Auth::user();
         $this->authorize('createPost', $user);
-        if ($request->action === 'createAndPublish') {
-            $this->authorize('publishPost', $user);
-        }
-        
-        $validated = $request->validate([
-			'title' => 'required|string|min:5|max:255',
-			'description' => 'required|min:5|string',
-			'start_timestamp' => 'required|date',
-            'meta_title' => 'required|string|min:5|max:255',
-			'meta_description' => 'required|min:5|string',
-            'keywords' => 'required|string|min:3|max:255'
-		]);
 
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:255',
+            'description' => 'required|min:5|string',
+            'start_timestamp' => 'required|date',
+            'meta_title' => 'required|string|min:5|max:255',
+            'meta_description' => 'required|min:5|string',
+            'keywords' => 'required|string|min:3|max:255'
+        ]);
+        
         // creating post
-		$postCreated = Post::create([
-            'status' => $validated['status'],
+        $postCreated = Post::create([
+            'status' => 'draft',
             'authored_by' => $user->email
         ]);
-
         // creating post version
         PostVersion::create([
             'post_id' => $postCreated->id,
@@ -141,19 +135,78 @@ class PostController extends Controller
             'meta_description' => $validated['meta_description'],
             'keywords' => $validated['keywords'],
             'edited_by' => $user->email,
-            'start_timestamp' => Carbon::parse($validated['start_timestamp'])->timestamp * 1000
+            'start_timestamp' => Carbon::parse($validated['start_timestamp'])->timestamp
         ]);
 
-		return redirect()->route('show.account');
+        return redirect()->route('show.editPost', ['id' => $postCreated->id])
+                         ->with('success', 'Post created successfully!');
 	}
+
+    public function editPost(Request $request, $postVersionId) {
+        $user = Auth::user();
+        $this->authorize('editPost', $user);
+        
+        $validated = $request->validate([
+            'title' => 'required|string|min:5|max:255',
+            'description' => 'required|min:5|string',
+            'start_timestamp' => 'required|date',
+            'meta_title' => 'required|string|min:5|max:255',
+            'meta_description' => 'required|min:5|string',
+            'keywords' => 'required|string|min:3|max:255'
+        ]);
+        // creating new post version
+        PostVersion::create([
+            'post_id' => $postVersionId,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'meta_title' => $validated['meta_title'],
+            'meta_description' => $validated['meta_description'],
+            'keywords' => $validated['keywords'],
+            'edited_by' => $user->email,
+            'start_timestamp' => Carbon::parse($validated['start_timestamp'])->timestamp
+        ]);
+
+        return redirect()->route('show.editPost', ['id' => $postVersionId])
+                        ->with('success', 'Post saved successfully!');
+    }
 
     public function showEditPost($postVersionId)
 	{
-		return view('post.editPost');
+        $query = "SELECT 
+            posts.status, posts.authored_by,
+            latest_versions.*, post_id as post_version_id, latest_versions.created_at as published_at
+            FROM posts
+            JOIN ( 
+                SELECT post_versions.*, MAX(created_at) as created_at
+                FROM post_versions
+                GROUP BY post_id
+            ) AS latest_versions
+            ON posts.id = latest_versions.post_id
+            AND latest_versions.post_id = :postVersionId
+            ORDER BY latest_versions.created_at DESC
+            LIMIT 1";
+        $post = collect(DB::select($query,[
+            'postVersionId' => $postVersionId
+        ]))->first();
+
+		return view('post.editPost', compact('post'));
 	}
 
-    public function editPost($postVersionId)
-	{
-		return view('post.editPost');
-	}
+    public function publishPost(Request $request, $postVersionId) {
+        $user = Auth::user();
+        $this->authorize('publishPost', $user);
+        Post::where('id', $postVersionId)->update(['status' => 'published']);
+
+        return redirect()->route('show.editPost', ['id' => $postVersionId])
+                        ->with('success', 'Post published!');
+    }
+
+    public function unPublishPost(Request $request, $postVersionId) {
+        $user = Auth::user();
+        $this->authorize('publishPost', $user);
+        Post::where('id', $postVersionId)->update(['status' => 'draft']);
+
+        return redirect()->route('show.editPost', ['id' => $postVersionId])
+                        ->with('success', 'Post unpublished!');
+    }
 }

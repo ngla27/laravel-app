@@ -9,15 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-  public function handle(Request $request, Closure $next, $role): Response
+  public function handle(Request $request, Closure $next, ...$roles): Response
   {
-    if (Auth::check() && Auth::user()->role === $role) {
+    $flattenedArray = array_merge($roles);
+    if (Auth::check() && in_array(Auth::user()->role, $flattenedArray)) {
         return $next($request);
     }
 
     // redirect home if no access
-    return redirect()->route('home');
-    return $next($request);
+    return redirect()->route('home')
+            ->with('success', 'Invalid access');
   }
 }
 

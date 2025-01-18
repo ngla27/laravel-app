@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('meta_description');
             $table->string('keywords');
             $table->string('edited_by');
-            $table->integer('start_timestamp');
+            $table->integer('start_timestamp')->index();
         });
     }
 

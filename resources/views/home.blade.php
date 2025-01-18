@@ -1,5 +1,10 @@
 <x-layout>
 <div class="container">
+    @if(session('success'))
+        <div class="alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
     <h1 class="my-4 text-3xl font-bold text-center">Latest Posts</h1>
 
     @if($posts->isEmpty())

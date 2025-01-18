@@ -36,7 +36,6 @@ p {
     @apply my-2;
 }
 
-/* form elements */
 form {
     @apply max-w-screen-sm;
 }
@@ -47,8 +46,10 @@ input, select, textarea {
     content: "*";
     color: red;
 }
+.alert-success {
+    @apply bg-green-100 text-green-800 border-l-4 border-green-500 p-4 mb-4 rounded-lg;
+}
 
-/* custom classes */
 .container {
     @apply max-w-screen-lg mx-auto px-12 py-8;
 }
@@ -62,7 +63,6 @@ input, select, textarea {
     @apply rounded px-3 py-2 bg-gray-200 hover:bg-red-500 hover:text-white;
 }
 
-/* Post container */
 .postContainer {
     @apply border border-gray-300 p-6 mb-6 rounded-lg shadow-md bg-white transition-transform duration-300 ease-in-out;
 }

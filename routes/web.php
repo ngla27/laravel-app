@@ -18,25 +18,21 @@ Route::middleware('auth')
     ->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/account', [AccountController::class, 'showAccountManagement'])->name('show.account');
-    
-    Route::middleware(['role:admin'])
-        ->group(function () {
-        Route::get('/createUser', [AuthController::class, 'showCreateUser'])->name('show.createUser');
-        Route::post('/createUser', [AuthController::class, 'createUser'])->name('createUser');
+    Route::get('/editPost/{id}', [PostController::class, 'showEditPost'])->name('show.editPost'); // can see post but unable to submit edit
+   
+    Route::controller(PostController::class)
+    ->group(function () {
+        Route::post('/publishPost/{id}', 'publishPost')->middleware('role:editor,admin')->name('publishPost');
+        Route::post('/unPublishPost/{id}', 'unPublishPost')->middleware('role:editor,admin')->name('unPublishPost');
+        Route::get('/createPost', 'showCreatePost')->middleware('role:editor,author')->name('show.createPost');
+        Route::post('/createPost', 'createPost')->middleware('role:editor,author')->name('createPost');
+        Route::post('/editPost/{id}', 'editPost')->middleware('role:editor,author')->name('editPost');
     });
 
-    Route::middleware(['role:editor,author'])
-        ->controller(PostController::class)
-        ->group(function () {
-        Route::get('/createPost', 'showCreatePost')->name('show.createPost');
-        Route::post('/createPost', 'createPost')->name('createPost');
-        Route::get('/editPost/{id}', 'showEditPost')->name('show.editPost');
-        Route::post('/editPost/{id}', 'editPost')->name('editPost');
-    });
-
-    Route::middleware(['role:admin,editor'])
-        ->controller(PostController::class)
-        ->group(function () {
-        Route::post('/publishPost', 'publishPost')->name('publishPost');
+    Route::controller(AuthController::class)
+    ->group(function () {
+        Route::get('/showUsers', 'showUsers')->middleware('role:admin')->name('show.showUsers');
+        Route::get('/createUser', 'showCreateUser')->middleware('role:admin')->name('show.createUser');
+        Route::post('/createUser', 'createUser')->middleware('role:admin')->name('createUser');
     });
 });
