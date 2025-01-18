@@ -10,7 +10,7 @@
                 <div class="postContainer">
                     <div class="postTitle">{{ $post->title }}</div>
                     <div class="postMeta">
-                        <span class="font-semibold">Published By:</span> {{ $post->updated_by }}
+                        <span class="font-semibold">Edited By:</span> {{ $post->edited_by }}
                         <br>
                         <span class="font-semibold">Last Updated:</span> {{ $post->published_at }}
                         <br>
@@ -18,7 +18,7 @@
                     <div class="postContent" id="content-{{ $post->id }}">{{ $post->description }}</div>
 
                     <!-- See full post -->
-                    <a href="{{ route('show.showPost', ['id' => $post->id]) }}" class="seeMoreLink">See more</a>
+                    <a href="{{ route('show.showPost', ['id' => $post->post_version_id]) }}" class="seeMoreLink">See more</a>
                 </div>
             @endforeach
         </div>

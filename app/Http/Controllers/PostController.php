@@ -3,29 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Carbon\Carbon;
+use App\Models\PostVersion;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::whereNotNull('published_at')->get();
-        $posts = $posts->map(function($post) {
-            $post->updated_at = Carbon::parse($post->updated_at)->format('j F Y');
-            $post->published_at = Carbon::parse($post->published_at)->format('j F Y');
-            return $post;
-        });
+        $query = "SELECT 
+            posts.status, posts.authored_by,
+            latest_versions.*, post_id as post_version_id, datetime(start_timestamp, 'unixepoch') as published_at
+            FROM posts
+            JOIN ( 
+                SELECT post_versions.*, MAX(start_timestamp) as start_timestamp
+                FROM post_versions
+                WHERE start_timestamp <= :currentTimestamp
+                GROUP BY post_id 
+            ) AS latest_versions
+            ON posts.id = latest_versions.post_id 
+            AND posts.status = :status
+            ORDER BY latest_versions.start_timestamp DESC";
 
+        $posts = collect(DB::select($query,[
+            'status' => 'published',
+            'currentTimestamp' => now(),
+        ]));
+        
         // Pass the posts data to the view
         return view('home', compact('posts'));
     }
 
-    public function showPost($id)
+    public function showPost($postVersionId)
     {
-        $post = Post::findOrFail($id);
-        $post->updated_at = Carbon::parse($post->updated_at)->format('j F Y');
-        $post->published_at = Carbon::parse($post->published_at)->format('j F Y');
-        
+        $query = "SELECT 
+            posts.status, posts.authored_by,
+            latest_versions.*, post_id as post_version_id, datetime(start_timestamp, 'unixepoch') as published_at
+            FROM posts
+            JOIN ( 
+                SELECT post_versions.*, MAX(start_timestamp) as start_timestamp
+                FROM post_versions
+                WHERE start_timestamp <= :currentTimestamp
+                GROUP BY post_id 
+            ) AS latest_versions
+            ON posts.id = latest_versions.post_id 
+            AND posts.status = :status
+            AND latest_versions.post_id = :postVersionId
+            ORDER BY latest_versions.start_timestamp DESC
+            LIMIT 1";
+
+        $post = collect(DB::select($query,[
+            'status' => 'published',
+            'currentTimestamp' => now(),
+            'postVersionId' => $postVersionId
+        ]))->first();
+
         return view('post.showPost', compact('post'));
     }
 
