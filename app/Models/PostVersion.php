@@ -22,8 +22,13 @@ class PostVersion extends Model
         'meta_title',
         'meta_description',
         'keywords',
-        'updated_at',
+        'edited_by',
         'start_timestamp',
         'end_timestamp'
     ];
+
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
 }

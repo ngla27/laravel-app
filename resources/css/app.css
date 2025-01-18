@@ -43,6 +43,10 @@ form {
 input, select, textarea {
     @apply block w-full mt-2 mb-4 p-2;
 }
+.required::after {
+    content: "*";
+    color: red;
+}
 
 /* custom classes */
 .container {
@@ -88,4 +92,22 @@ input, select, textarea {
 }
 .seeMoreLink {
     @apply text-blue-500 hover:underline cursor-pointer;
+}
+.postTags {
+    @apply mt-2.5 pb-5;
+}
+.tag {
+    @apply inline-block px-2.5 py-1.5 mr-1.5 rounded text-sm font-bold;
+}
+.published {
+    @apply bg-green-500 text-white;
+}
+.draft {
+    @apply bg-orange-400 text-white;
+}
+.metaContainer {
+    @apply border border-gray-300 p-6 mb-6 rounded-lg shadow-md bg-white transition-transform duration-300 ease-in-out;
+}
+.metaHeader {
+    @apply flex justify-between items-center pb-4;
 }

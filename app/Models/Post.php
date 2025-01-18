@@ -19,4 +19,9 @@ class Post extends Model
         'status',
         'authored_by',
     ];
+
+    public function postVersions()
+    {
+        return $this->hasMany(PostVersion::class);
+    }
 }

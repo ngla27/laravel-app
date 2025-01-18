@@ -1,6 +1,6 @@
 <x-layout>
 <div class="container">
-    <h1 class="my-4 text-3xl font-bold text-center">All Posts</h1>
+    <h1 class="my-4 text-3xl font-bold text-center">Latest Posts</h1>
 
     @if($posts->isEmpty())
         <p class="text-center">No posts available.</p>

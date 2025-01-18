@@ -12,9 +12,10 @@ class RoleMiddleware
   public function handle(Request $request, Closure $next, $role): Response
   {
     if (Auth::check() && Auth::user()->role === $role) {
-        return $next($request);  // Allow access
+        return $next($request);
     }
 
+    // redirect home if no access
     return redirect()->route('home');
     return $next($request);
   }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('status'); // published, draft, archived
+            $table->string('status'); // published, draft
             $table->string('authored_by');
             $table->timestamps();
         });

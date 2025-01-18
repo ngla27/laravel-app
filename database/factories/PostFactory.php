@@ -15,7 +15,7 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => fake()->randomElement(['draft', 'published', 'archived']),
+            'status' => fake()->randomElement(['draft', 'published']),
             'authored_by' => User::where('role', 'author')
                             ->inRandomOrder()->first()
                             ->email,

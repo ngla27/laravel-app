@@ -3,16 +3,16 @@
     @csrf
     <h2>Create a user</h2>
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required></input>
+    <input type="text" id="name" name="name" value="{{ old('name') }}" required></input>
 
     <label for="email">Email:</label>
-    <input type="text" id="email" name="email" required></input>
+    <input type="text" id="email" name="email" value="{{ old('email') }}" required></input>
 
     <label for="role">Role:</label>
     <select name="role" id="role">
-        <option value="admin">Admin</option>
-        <option value="editor">Editor</option>
-        <option value="author">Author</option>
+        <option value="admin" {{ old('status') == 'admin' ? 'selected' : '' }}>Admin</option>
+        <option value="editor" {{ old('status') == 'editor' ? 'selected' : '' }}>Editor</option>
+        <option value="author" {{ old('status') == 'author' ? 'selected' : '' }}>Author</option>
     </select>
 
     <label for="password">Password:</label>
