@@ -27,7 +27,7 @@
     <input type="text" id="title" name="title" value="{{ old('title', isset($post) ? $post->title : '') }}" required></input>
 
     <label class="required" for="description">Description</label>
-    <input type="textarea" id="description" name="description" value="{{ old('description', isset($post) ? $post->description : '') }}" required></input>
+    <textarea id="description" name="description" required>{{ old('description', isset($post) ? $post->description : '') }}</textarea>
 
     <label class="required" for="start_timestamp">Start Date Time</label>
     <input type="datetime-local" id="start_timestamp" name="start_timestamp" value="{{ old('start_timestamp', isset($post) ? \Carbon\Carbon::parse($post->start_timestamp)->format('Y-m-d\TH:i') : '') }}" required>
@@ -44,7 +44,7 @@
         <input class="bg-gray-200" type="text" id="meta_title" name="meta_title" value="{{ old('meta_title', isset($post) ? $post->meta_title : '') }}" required></input>
 
         <label class="required" for="meta_description">Meta Description</label>
-        <input class="bg-gray-200" type="text" id="meta_description" name="meta_description" value="{{ old('meta_description', isset($post) ? $post->meta_description : '') }}" required></input>
+        <textarea class="bg-gray-200" id="meta_description" name="meta_description" required>{{ old('meta_description', isset($post) ? $post->meta_description : '') }}</textarea>
 
         <label class="required" for="keywords">Keywords</label>
         <input class="bg-gray-200" type="text" id="keywords" name="keywords" value="{{ old('keywords', isset($post) ? $post->keywords : '') }}" required></input>
