@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory
@@ -14,15 +15,10 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->sentence(),
-            'description' => fake()->paragraph(),
-            'meta_title' => fake()->sentence(),
-            'meta_description' => fake()->sentence(),
-            'keywords' => fake()->word(),
-            'updated_at' => fake()->dateTimeBetween('now', '+6 months')->getTimestamp(),
-            'updated_by' => fake()->email(),
-            'published_by' => fake()->email(),
-            'published_at' => fake()->boolean(70) ? fake()->dateTimeBetween('now', '+6 months')->getTimestamp() : null
+            'status' => fake()->randomElement(['draft', 'published', 'archived']),
+            'authored_by' => User::where('role', 'author')
+                            ->inRandomOrder()->first()
+                            ->email,
         ];
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class PostVersion extends Model
 {
     use HasFactory;
 
@@ -16,7 +16,14 @@ class Post extends Model
      */
     protected $fillable = [
         'id',
-        'status',
-        'authored_by',
+        'post_id',
+        'title',
+        'description',
+        'meta_title',
+        'meta_description',
+        'keywords',
+        'updated_at',
+        'start_timestamp',
+        'end_timestamp'
     ];
 }
