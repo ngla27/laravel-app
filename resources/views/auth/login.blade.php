@@ -1,4 +1,6 @@
 <x-layout>
+    @section('title','Login')
+
     <form action="{{ route('login') }}" method="POST">
         @csrf
         <h2>Login to your account</h2>

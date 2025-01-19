@@ -1,4 +1,6 @@
 <x-layout>
+    @section('title','Account')
+
     <span>Role: {{ Auth::user()->role }}</span>
     <br><br>
 

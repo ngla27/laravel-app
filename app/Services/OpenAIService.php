@@ -42,7 +42,7 @@ class OpenAIService
             // Check if the response is successful
             if ($response->successful()) {
                 $content = $response->json()['choices'][0]['message']['content'] ?? '';
-                return $this->parseMetaContent($content);
+                return $this->parseMetaContent($content, $title);
             } else {
                 Log::error('OpenAI API response error', [
                     'response_body' => $response->body(),
@@ -56,9 +56,9 @@ class OpenAIService
         }
 
         return [
-            'meta_title' => 'Default Meta Title',
-            'meta_description' => 'Default Meta Description',
-            'keywords' => 'default, keywords',
+            'meta_title' => $title,
+            'meta_description' => $title,
+            'keywords' => $title,
         ];
     }
 
@@ -68,16 +68,16 @@ class OpenAIService
      * @param string $content
      * @return array
      */
-    private function parseMetaContent(string $content): array
+    private function parseMetaContent(string $content, $title): array
     {
         preg_match('/Meta Title: (.*)/', $content, $metaTitle);
         preg_match('/Meta Description: (.*)/', $content, $metaDescription);
         preg_match('/Keywords: (.*)/', $content, $keywords);
 
         return [
-            'meta_title' => $metaTitle[1] ?? 'Parse Default Meta Title',
-            'meta_description' => $metaDescription[1] ?? 'Parse Default Meta Description',
-            'keywords' => $keywords[1] ?? 'Parse default, keywords',
+            'meta_title' => $metaTitle[1] ?? $title,
+            'meta_description' => $metaDescription[1] ?? $title,
+            'keywords' => $keywords[1] ?? $title,
         ];
     }
 }
