@@ -41,7 +41,7 @@
                             <br>
                         @endif
                     </div>
-                    <div class="postContent" id="content-{{ $post->id }}">{{ $post->description }}</div>
+                    <div class="postContent" id="content-{{ $post->id }}">{!! $post->description !!}</div>
 
                     <!-- See full post -->
                     <a href="{{ route('show.editPost', ['id' => $post->post_version_id]) }}" class="seeMoreLink">Edit Page</a>

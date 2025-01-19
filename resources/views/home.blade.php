@@ -20,7 +20,7 @@
                             <span class="font-semibold">Last Updated:</span> {{ $post->published_at }}
                             <br>
                         </div>
-                        <div class="postContent" id="content-{{ $post->id }}">{{ $post->description }}</div>
+                        <div class="postContent" id="content-{{ $post->id }}">{!! $post->description !!}</div>
 
                         <!-- See full post -->
                         <a href="{{ route('show.showPost', ['id' => $post->post_version_id]) }}" class="seeMoreLink">See more</a>

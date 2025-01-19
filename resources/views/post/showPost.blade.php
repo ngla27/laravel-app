@@ -18,7 +18,7 @@
                 <span class="font-semibold">Last Updated:</span> {{ $post->published_at }}
                 <br>
             </div>
-            <div class="text-lg text-gray-700 mb-6">{{ $post->description }}</div>
+            <div class="text-lg mb-6">{!! $post->description !!}</div>
 
             <!-- Back to Posts Link -->
             <div class="mt-6">

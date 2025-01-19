@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PostController;
 
@@ -40,5 +41,10 @@ Route::middleware('auth')
     Route::controller(MetaController::class)
     ->group(function () {
         Route::post('/generateMeta', 'generateMeta')->middleware('role:editor,author')->name('generateMeta');
+    });
+
+    Route::controller(ImageController::class)
+    ->group(function () {
+        Route::post('/uploadImage', 'uploadImage')->middleware('role:editor,author')->name('uploadImage');
     });
 });

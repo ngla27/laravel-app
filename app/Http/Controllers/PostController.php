@@ -52,15 +52,14 @@ class PostController extends Controller
             latest_versions.*, post_id as post_version_id, datetime(start_timestamp, 'unixepoch') as published_at
             FROM posts
             JOIN ( 
-                SELECT post_versions.*, MAX(start_timestamp) as start_timestamp
+                SELECT *, MAX(created_at) as created_at
                 FROM post_versions
                 WHERE start_timestamp <= :currentTimestamp
-                GROUP BY post_id
+                GROUP BY post_id 
             ) AS latest_versions
             ON posts.id = latest_versions.post_id 
             AND posts.status = :status
             AND latest_versions.post_id = :postVersionId
-            ORDER BY latest_versions.start_timestamp DESC
             LIMIT 1";
 
         $post = collect(DB::select($query,[
