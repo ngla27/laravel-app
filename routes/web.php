@@ -46,5 +46,6 @@ Route::middleware('auth')
     Route::controller(ImageController::class)
     ->group(function () {
         Route::post('/uploadImage', 'uploadImage')->middleware('role:editor,author')->name('uploadImage');
+        Route::post('/uploadVideo', 'uploadVideo')->middleware('role:editor,author')->name('uploadVideo');
     });
 });

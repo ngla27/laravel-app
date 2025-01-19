@@ -44,10 +44,8 @@
             <button type="button" class="editor-btn" data-element="justifyCenter"><i class="fas fa-align-center"></i></button>
             <button type="button" class="editor-btn" data-element="justifyRight"><i class="fas fa-align-right"></i></button>
             <button type="button" class="editor-btn" data-element="justifyFull"><i class="fas fa-align-justify"></i></button>
-            <button type="button" class="editor-btn" data-element="insertImageUrl"><i class="fas fa-image"></i></button>
-            <button type="button" class="editor-btn" data-element="insertImageFile"><i class="fas fa-upload"></i></button>
-            <input class="editor-input-color" type="file" id="imageUpload">
-            <input class="editor-input-color" type="color" id="imageUrl" placeholder="Enter image URL: ">
+            <button type="button" class="editor-btn" data-element="insertMediaFile"><i class="fas fa-upload"></i></button>
+            <input class="editor-input-color" type="file" id="mediaUpload">
 
             <div id="editorTextArea" contenteditable="true">{!! old('description', isset($post) ? $post->description : '') !!}</div>
         </div>
@@ -148,31 +146,49 @@
             });
         })
 
-        /** Uploads image and links image in editor */
-        document.getElementById('imageUpload')
+        /** Uploads media and links it in editor */
+        document.getElementById('mediaUpload')
             .addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const base64Image = e.target.result;
-                    // uploads image
-                    fetch("{{ route('uploadImage') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({ image: base64Image })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // insert link into editor
-                        insertImage(data.path);
-                    })
-                    .catch(error => {
-                        console.error('Error uploading image:', error);
-                    });
+                    const base64Media = e.target.result;
+                    const fileType = file.type;
+
+                    let routePath;
+                    let mediaType = "img";
+                    if (fileType.startsWith('image/')) {
+                        routePath = "{{ route('uploadImage') }}";
+                        mediaType = "img";
+                    } else if (fileType.startsWith('video/')) {
+                        routePath = "{{ route('uploadVideo') }}";
+                        mediaType = "video";
+                    }
+
+                    if (routePath) {
+                        // uploads media
+                        fetch(routePath, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({ media: base64Media })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // insert link into editor
+                            insertMedia(data.path, mediaType);
+                        })
+                        .catch(error => {
+                            console.error('Error uploading media:', error);
+                        });
+                    } else {
+                        // insert invalid media
+                        insertMedia('No media', mediaType);
+                    }
+                    
                 }
                 reader.readAsDataURL(file);
                 event.target.value = "";
@@ -184,38 +200,38 @@
         elements.forEach(element => {
             let command = element.dataset['element'];
             let value = null;
-            let skipExec = false
             element.addEventListener('click', () => {
                 if (command === 'editorTextArea') {
                     command = 'styleWithCSS';
                     value = true;
-                } else if (command === 'insertImageUrl') {
-                    skipExec = true;
-                    const url = prompt('Enter image URL:');
-                    if (url) {
-                        insertImage(url);
-                    }
-                } else if (command === 'insertImageFile') {
-                    document.getElementById('imageUpload').click();
+                } else if (command === 'insertMediaFile') {
+                    document.getElementById('mediaUpload').click();
                 }
                 document.execCommand(command, false, value);
             })
             
         })
 
-        /** Insert image into editor */
-        function insertImage(src) {
-            const img = document.createElement("img");
-            img.src = src;
-            img.style.maxWidth = "100%";
-            img.style.height = "auto";
-            img.style.display = "inline-block";
-            img.style.margin = "10px 0";
-            img.setAttribute("contenteditable", "false");
-            img.classList.add("resizeable-image");
+        /** Insert media into editor */
+        function insertMedia(src, mediaType) {
+            const media = document.createElement(mediaType);
+            media.src = src;
+            media.style.maxWidth = "100%";
+            media.style.height = "auto";
+            media.style.display = "inline-block";
+            media.style.margin = "10px 0";
+            media.setAttribute("contenteditable", "false");
 
-            const uniqueId = "image-" + Date.now();
-            img.id =  uniqueId;
+            if (mediaType === 'img') {
+                media.classList.add("resizeable-image");
+            } else if (mediaType === 'video') {
+                media.classList.add("resizeable-video");
+                media.controls = true;
+            }
+            
+
+            const uniqueId = "media-" + Date.now();
+            media.id =  uniqueId;
 
             const editorTextArea = document.getElementById("editorTextArea");
             const selection = window.getSelection();
@@ -224,21 +240,19 @@
                 const range = selection.getRangeAt(0);
                 if (range.startContainer === editorTextArea || range.startContainer.parentNode === editorTextArea) {
                     range.deleteContents();
-                    range.insertNode(img);
-                    range.setStartAfter(img);
-                    range.setEndAfter(img);
+                    range.insertNode(media);
+                    range.setStartAfter(media);
+                    range.setEndAfter(media);
                     selection.removeAllRanges();
                     selection.addRange(range);
                 } else {
-                    editorTextArea.appendChild(img);
+                    editorTextArea.appendChild(media);
                 }
             } else {
-                editorTextArea.appendChild(img);
+                editorTextArea.appendChild(media);
             }
 
-            adjustTextAreaHeight();
-
-            img.onload = function () {
+            media.onload = function () {
                 adjustTextAreaHeight();
             }
         } 
@@ -247,7 +261,7 @@
         function adjustTextAreaHeight() {
             const editorTextArea = document.getElementById('editorTextArea');
             editorTextArea.style.height = "auto";
-            editorTextArea.style.height = editorTextArea.scrollHeight + "px";
+            editorTextArea.style.height = (parseInt(editorTextArea.scrollHeight) + 200) + "px";
         }
 
         document.getElementById('editorTextArea').addEventListener('input', function () {
