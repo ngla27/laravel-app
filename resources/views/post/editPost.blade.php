@@ -43,7 +43,7 @@
             <div class="metaHeader">
                 <h2>Meta data</h2>
                 @can('editPost', Auth::user())
-                    <button type="button" class="btn" onclick="generateSuggestions()">Generate</button>
+                    <button type="button" class="btn" id="generate-meta-btn">Generate</button>
                 @endcan
             </div>
             <label class="required" for="meta_title">Meta title</label>
@@ -96,8 +96,7 @@
     @endif
 
     <script>
-        // Function to trigger an AJAX request to generate meta information
-        function generateSuggestions() {
+        document.getElementById('generate-meta-btn').addEventListener('click', function() {
             // Get form data
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
@@ -122,6 +121,6 @@
             .catch(error => {
                 console.error('Error generating suggestions:', error);
             });
-        }
+        })
     </script>
 </x-layout>
